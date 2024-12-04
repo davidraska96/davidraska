@@ -3,92 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Vyhledávání - Export výsledků</title>
+    <title>Google Vyhledávání</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
         }
-        input[type="text"] {
-            padding: 10px;
-            width: 300px;
-            font-size: 16px;
+
+        h1 {
+            color: #0073e6;
+            margin-top: 20px;
+            font-size: 2.5rem;
         }
-        button {
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .results {
+
+        .search-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
             margin-top: 20px;
         }
-        .result-item {
-            background-color: white;
-            padding: 15px;
-            margin-bottom: 10px;
+
+        .gcse-search {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        input[type="text"] {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 1.2rem;
+            width: 80%;
+            margin: 10px 0;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #0073e6;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+
+        #results {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .result-card h3 {
+            margin: 0 0 10px;
+            color: #0073e6;
+            font-size: 1.3rem;
+        }
+
+        .result-card p {
+            margin: 0 0 10px;
+            color: #555;
+        }
+
+        .result-link {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #0073e6;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .result-link:hover {
+            background: #005bb5;
+        }
+
+        #download-button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #download-button:hover {
+            background-color: #218838;
+        }
+
+        .logo {
+            width: 120px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Vyhledávání na Google a Export do CSV</h1>
-    
-    <input type="text" id="query" placeholder="Zadejte klíčové slovo..." />
-    <button onclick="searchGoogle()">Hledat</button>
 
-    <div class="results" id="results"></div>
+    <!-- Google Logo -->
+    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png" alt="Google Logo" class="logo">
+
+    <h1>Vyhledání na Google</h1>
+
+    <div class="search-container">
+        <form id="search-form">
+            <input type="text" id="query" name="query" placeholder="Hledejte něco..." required>
+            <button type="submit">Vyhledat</button>
+        </form>
+    </div>
+
+    <div id="results"></div>
+    <button id="download-button" style="display:none;">Stáhnout výsledky</button>
 
     <script async src="https://cse.google.com/cse.js?cx=b18f2e5a357024d30"></script>
     <div class="gcse-search"></div>
 
     <script>
-        function searchGoogle() {
-            const query = document.getElementById("query").value;
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let query = document.getElementById('query').value.trim();
+
             if (!query) {
-                alert("Zadejte klíčové slovo!");
+                alert("Prosím, zadejte klíčové slovo pro vyhledávání.");
                 return;
             }
 
-            const cx = "b18f2e5a357024d30";  // Váš CSE ID
-            const apiKey = "337910b0-b27c-11ef-8ae0-fb69bb703eea"; // API klíč (v případě potřeby)
+            let loader = document.getElementById('loader');
+            loader.style.display = 'block';
 
-            fetch(`https://www.googleapis.com/customsearch/v1?q=${query}&cx=${cx}&key=${apiKey}`)
-                .then(response => response.json())
-                .then(data => {
-                    const resultsContainer = document.getElementById("results");
-                    resultsContainer.innerHTML = "";
+            setTimeout(() => {
+                let results = [
+                    {
+                        title: "První výsledek pro '" + query + "'",
+                        link: "https://www.example.com",
+                        snippet: "Toto je první výsledek hledání pro zadané klíčové slovo."
+                    },
+                    {
+                        title: "Druhý výsledek pro '" + query + "'",
+                        link: "https://www.example2.com",
+                        snippet: "Toto je druhý výsledek hledání pro zadané klíčové slovo."
+                    }
+                ];
 
-                    const results = data.items;
-                    let csvContent = "Title,Link,Snippet\n";  // CSV záhlaví
+                displayResults(results);
+                loader.style.display = 'none';
+                document.getElementById('download-button').style.display = 'block';
+            }, 1500);
+        });
 
-                    results.forEach((result, index) => {
-                        // Vytvoření HTML výsledků
-                        const resultElement = document.createElement("div");
-                        resultElement.classList.add("result-item");
-                        resultElement.innerHTML = `
-                            <h3><a href="${result.link}" target="_blank">${result.title}</a></h3>
-                            <p>${result.snippet}</p>
-                        `;
-                        resultsContainer.appendChild(resultElement);
+        function displayResults(results) {
+            let resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
 
-                        // Přidání výsledků do CSV
-                        csvContent += `"${result.title.replace(/"/g, '""')}", "${result.link}", "${result.snippet.replace(/"/g, '""')}"\n`;
-                    });
+            results.forEach(result => {
+                let resultCard = document.createElement('div');
+                resultCard.classList.add('result-card');
 
-                    // Umožnění stáhnout CSV
-                    const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
-                    const downloadLink = document.createElement("a");
-                    downloadLink.href = encodedUri;
-                    downloadLink.target = "_blank";
-                    downloadLink.download = "google_search_results.csv";
-                    downloadLink.click();
-                })
-                .catch(error => {
-                    alert("Došlo k chybě při vyhledávání.");
-                });
+                let resultTitle = document.createElement('h3');
+                resultTitle.textContent = result.title;
+                resultTitle.onclick = () => window.open(result.link, '_blank');
+                resultTitle.style.cursor = 'pointer';
+
+                let resultSnippet = document.createElement('p');
+                resultSnippet.textContent = result.snippet;
+
+                let resultLink = document.createElement('a');
+                resultLink.textContent = "Otevřít";
+                resultLink.href = result.link;
+                resultLink.target = "_blank";
+                resultLink.classList.add('result-link');
+
+                resultCard.appendChild(resultTitle);
+                resultCard.appendChild(resultSnippet);
+                resultCard.appendChild(resultLink);
+                resultsContainer.appendChild(resultCard);
+            });
         }
+
+        document.getElementById('download-button').addEventListener('click', function() {
+            let resultsJSON = document.getElementById('results').textContent;
+            let blob = new Blob([resultsJSON], { type: 'application/json' });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'vyhledavani.json';
+            link.click();
+        });
     </script>
 </body>
 </html>
