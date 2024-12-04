@@ -2,8 +2,7 @@ document.getElementById('search-form').addEventListener('submit', function(event
     event.preventDefault();
     let query = document.getElementById('query').value;
 
-    // Představme si, že zde je nějaká funkce pro získání výsledků z vyhledávače.
-    // Zde použijeme fiktivní data pro ilustraci.
+    // Simulované výsledky
     let results = [
         {
             title: "První výsledek pro '" + query + "'",
@@ -17,23 +16,41 @@ document.getElementById('search-form').addEventListener('submit', function(event
         }
     ];
 
-    // Vytvoření JSON objektu pro výsledky
-    let resultsJSON = JSON.stringify(results, null, 2);
+    displayResults(results);
 
-    // Zobrazíme výsledky na stránce
-    document.getElementById('results').innerHTML = '<pre>' + resultsJSON + '</pre>';
-
-    // Zobrazíme tlačítko pro stažení výsledků
+    // Zobrazíme tlačítko pro stažení
     document.getElementById('download-button').style.display = 'block';
 
-    // Přidání funkce pro stažení výsledků jako JSON
-    document.getElementById('download-button').addEventListener('click', function() {
-        downloadResults(resultsJSON);
-    });
+    // Přidání funkce pro stažení výsledků
+    document.getElementById('download-button').onclick = function() {
+        downloadResults(results);
+    };
 });
 
-// Funkce pro stažení souboru JSON
-function downloadResults(resultsJSON) {
+function displayResults(results) {
+    let resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; // Vymazání předchozích výsledků
+
+    results.forEach(result => {
+        let resultItem = document.createElement('div');
+        resultItem.classList.add('result-item');
+        
+        let resultTitle = document.createElement('h3');
+        resultTitle.textContent = result.title;
+        resultTitle.onclick = () => window.open(result.link, '_blank');
+        resultTitle.style.cursor = 'pointer';
+
+        let resultSnippet = document.createElement('p');
+        resultSnippet.textContent = result.snippet;
+
+        resultItem.appendChild(resultTitle);
+        resultItem.appendChild(resultSnippet);
+        resultsContainer.appendChild(resultItem);
+    });
+}
+
+function downloadResults(results) {
+    let resultsJSON = JSON.stringify(results, null, 2);
     let blob = new Blob([resultsJSON], { type: 'application/json' });
     let link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
