@@ -14,7 +14,8 @@ document.getElementById('search-form').addEventListener('submit', function(event
 
     // API klíč a URL pro ZenSerp
     const apiKey = "337910b0-b27c-11ef-8ae0-fb69bb703eea";  // Váš API klíč
-    const url = `https://app.zenserp.com/api/v2/search?q=${encodeURIComponent(query)}&location=auto&hl=cs`;
+    const location = "cz";  // Nebo můžete použít "Prague" pro specifikaci města
+    const url = `https://app.zenserp.com/api/v2/search?q=${encodeURIComponent(query)}&location=${location}&hl=cs`;
 
     fetch(url, {
         method: 'GET', 
