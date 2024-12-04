@@ -3,92 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vyhledávání - Google Custom Search</title>
+    <title>Google Vyhledávání - Export výsledků</title>
     <style>
-        /* Styly pro zajištění dobrého vzhledu */
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #f4f4f4;
-            color: #333;
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background: #fff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            color: #007BFF;
-            text-align: center;
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
         }
-        .gcse-search {
-            width: 100%;
-            margin: 20px 0;
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
         }
         .results {
             margin-top: 20px;
         }
         .result-item {
-            background: #fff;
+            background-color: white;
             padding: 15px;
-            border-radius: 5px;
             margin-bottom: 10px;
+            border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .result-item h3 {
-            margin: 0;
-            color: #007BFF;
-        }
-        .result-item p {
-            color: #555;
-        }
-        .result-item a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        .result-item a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Vyhledávání na Google</h1>
-        
-        <!-- Google Custom Search Widget -->
-        <script async src="https://cse.google.com/cse.js?cx=b18f2e5a357024d30"></script>
-        <div class="gcse-search"></div>
+    <h1>Vyhledávání na Google a Export do CSV</h1>
+    
+    <input type="text" id="query" placeholder="Zadejte klíčové slovo..." />
+    <button onclick="searchGoogle()">Hledat</button>
 
-        <!-- Výsledky vyhledávání -->
-        <div class="results">
-            <div class="result-item">
-                <h3><a href="https://example.com">Příklad výsledku 1</a></h3>
-                <p>Popis výsledku 1</p>
-            </div>
-            <div class="result-item">
-                <h3><a href="https://example.com">Příklad výsledku 2</a></h3>
-                <p>Popis výsledku 2</p>
-            </div>
-            <!-- Dynamicky generované výsledky se objeví zde -->
-        </div>
-    </div>
+    <div class="results" id="results"></div>
 
-    <!-- Google Custom Search Script (zajistí funkčnost) -->
+    <script async src="https://cse.google.com/cse.js?cx=b18f2e5a357024d30"></script>
+    <div class="gcse-search"></div>
+
     <script>
-        // Tento skript je zajišťuje funkčnost pro zobrazení výsledků
-        (function() {
-            var cx = 'b18f2e5a357024d30'; // Vaše CSE ID
-            var gcse = document.createElement('script');
-            gcse.type = 'text/javascript';
-            gcse.async = true;
-            gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(gcse, s);
-        })();
+        function searchGoogle() {
+            const query = document.getElementById("query").value;
+            if (!query) {
+                alert("Zadejte klíčové slovo!");
+                return;
+            }
+
+            const cx = "b18f2e5a357024d30";  // Váš CSE ID
+            const apiKey = "337910b0-b27c-11ef-8ae0-fb69bb703eea"; // API klíč (v případě potřeby)
+
+            fetch(`https://www.googleapis.com/customsearch/v1?q=${query}&cx=${cx}&key=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById("results");
+                    resultsContainer.innerHTML = "";
+
+                    const results = data.items;
+                    let csvContent = "Title,Link,Snippet\n";  // CSV záhlaví
+
+                    results.forEach((result, index) => {
+                        // Vytvoření HTML výsledků
+                        const resultElement = document.createElement("div");
+                        resultElement.classList.add("result-item");
+                        resultElement.innerHTML = `
+                            <h3><a href="${result.link}" target="_blank">${result.title}</a></h3>
+                            <p>${result.snippet}</p>
+                        `;
+                        resultsContainer.appendChild(resultElement);
+
+                        // Přidání výsledků do CSV
+                        csvContent += `"${result.title.replace(/"/g, '""')}", "${result.link}", "${result.snippet.replace(/"/g, '""')}"\n`;
+                    });
+
+                    // Umožnění stáhnout CSV
+                    const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = encodedUri;
+                    downloadLink.target = "_blank";
+                    downloadLink.download = "google_search_results.csv";
+                    downloadLink.click();
+                })
+                .catch(error => {
+                    alert("Došlo k chybě při vyhledávání.");
+                });
+        }
     </script>
 </body>
 </html>
