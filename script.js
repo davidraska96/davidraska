@@ -14,9 +14,14 @@ document.getElementById('search-form').addEventListener('submit', function(event
 
     // API klíč a URL pro ZenSerp
     const apiKey = "337910b0-b27c-11ef-8ae0-fb69bb703eea";  // Váš API klíč
-    const url = `https://app.zenserp.com/api/v2/search?apikey=${apiKey}&q=${encodeURIComponent(query)}&location=auto&hl=cs`;
+    const url = `https://app.zenserp.com/api/v2/search?q=${encodeURIComponent(query)}&location=auto&hl=cs`;
 
-    fetch(url)
+    fetch(url, {
+        method: 'GET', 
+        headers: {
+            'apikey': apiKey
+        }
+    })
         .then(response => response.json())
         .then(data => {
             console.log("Odpověď API:", data); // Vytiskněte odpověď pro ladění
