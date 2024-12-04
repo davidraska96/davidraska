@@ -14,8 +14,14 @@ document.getElementById('search-form').addEventListener('submit', function(event
 
     // API klíč a URL pro ZenSerp
     const apiKey = "337910b0-b27c-11ef-8ae0-fb69bb703eea";  // Váš API klíč
-    const location = "cz";  // Nebo můžete použít "Prague" pro specifikaci města
-    const url = `https://app.zenserp.com/api/v2/search?q=${encodeURIComponent(query)}&location=${location}&hl=cs`;
+    const location = "Prague";  // Nebo "cz" pro Českou republiku
+    const lang = "cs"; // Jazyk výsledků
+    const hl = "cs"; // Jazyk rozhraní
+    // Například souřadnice pro Prahu: lat=50.0755, lng=14.4378
+    const lat = "50.0755"; // Latitude pro Prahu
+    const lng = "14.4378"; // Longitude pro Prahu
+
+    const url = `https://app.zenserp.com/api/v2/search?q=${encodeURIComponent(query)}&location=${location}&lang=${lang}&hl=${hl}&lat=${lat}&lng=${lng}`;
 
     fetch(url, {
         method: 'GET', 
