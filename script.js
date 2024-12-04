@@ -14,12 +14,22 @@ document.getElementById('search-form').addEventListener('submit', async function
         const apiKey = 'fa2a485992054148005ebd2822733cead14d52247aa2cc205d491589bb048848';
         const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&hl=cs&gl=cz&api_key=${apiKey}`;
 
+        console.log("Sending request to:", url); // Debug: URL požadavku
+
         const response = await fetch(url);
         if (!response.ok) {
+            console.error("HTTP error:", response.status, response.statusText); // Debug: Stavová chyba
             throw new Error(`HTTP chyba: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log("API Response:", data); // Debug: Zobrazení dat z API
+
+        if (!data.organic_results || data.organic_results.length === 0) {
+            alert("Nebyly nalezeny žádné výsledky.");
+            return;
+        }
+
         const results = data.organic_results.map(item => ({
             title: item.title,
             link: item.link,
@@ -29,8 +39,8 @@ document.getElementById('search-form').addEventListener('submit', async function
         displayResults(results);
         document.getElementById('download-button').style.display = 'block';
     } catch (error) {
-        console.error('Chyba při načítání výsledků:', error);
-        alert('Došlo k chybě při načítání výsledků.');
+        console.error('Chyba při načítání výsledků:', error); // Debug: Chyby v kódu
+        alert('Došlo k chybě při načítání výsledků. Zkontrolujte konzoli pro více informací.');
     } finally {
         loader.style.display = 'none';
     }
