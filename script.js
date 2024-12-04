@@ -19,8 +19,9 @@ document.getElementById('search-form').addEventListener('submit', function(event
     fetch(url)
         .then(response => response.json())
         .then(data => {
+            console.log("Odpověď API:", data); // Vytiskněte odpověď pro ladění
             loader.style.display = 'none';
-            if (data && data.organic_results) {
+            if (data && data.organic_results && data.organic_results.length > 0) {
                 displayResults(data.organic_results);
             } else {
                 showError("Nebyly nalezeny žádné výsledky.");
