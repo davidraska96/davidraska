@@ -3,195 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vyhledávání na Google</title>
+    <title>Vyhledávání - Google Custom Search</title>
     <style>
-        /* Stylování stránky */
+        /* Styly pro zajištění dobrého vzhledu */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
-            text-align: center;
-        }
-
-        h1 {
-            margin-top: 20px;
+            background-color: #f4f4f4;
             color: #333;
         }
-
-        #search-form {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        label {
-            font-size: 1.1rem;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            width: 100%;
-            max-width: 400px;
-            transition: box-shadow 0.3s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
-        }
-
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        button:hover {
-            background: #0056b3;
-            transform: scale(1.05);
-        }
-
-        #results {
-            margin-top: 20px;
-            width: 90%;
-            max-width: 600px;
+        .container {
+            width: 80%;
+            margin: 20px auto;
             background: #fff;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .result-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        h1 {
+            color: #007BFF;
+            text-align: center;
+        }
+        .gcse-search {
+            width: 100%;
+            margin: 20px 0;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result-item {
+            background: #fff;
             padding: 15px;
-            margin-bottom: 15px;
-            background-color: #fff;
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
-        .result-card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-5px);
+        .result-item h3 {
+            margin: 0;
+            color: #007BFF;
         }
-
-        .result-card h3 {
-            margin: 0 0 10px;
-            color: #007bff;
-        }
-
-        .result-card p {
-            margin: 0 0 10px;
+        .result-item p {
             color: #555;
         }
-
-        .result-link {
-            display: inline-block;
-            padding: 5px 10px;
-            background: #007bff;
-            color: #fff;
+        .result-item a {
+            color: #007BFF;
             text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
         }
-
-        .result-link:hover {
-            background: #0056b3;
-        }
-
-        #download-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #28a745;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        #download-button:hover {
-            background: #1e7e34;
-            transform: scale(1.05);
-        }
-
-        #loader {
-            font-size: 1.2rem;
-            color: #555;
-            margin-top: 20px;
-            animation: fadeIn 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0.5;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* Chybová zpráva */
-        #error-message {
-            color: red;
-            margin-top: 20px;
-            display: none;
-        }
-
-        /* Responzivní styl */
-        @media (max-width: 600px) {
-            #search-form {
-                width: 90%;
-                padding: 15px;
-            }
-
-            input[type="text"] {
-                width: 100%;
-            }
-
-            #results {
-                padding: 15px;
-            }
-
-            button {
-                width: 100%;
-                text-align: center;
-            }
+        .result-item a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google logo" class="logo">
-    <h1>Vyhledání na Google</h1>
-    <form id="search-form">
-        <label for="query">Zadejte klíčové slovo:</label>
-        <input type="text" id="query" name="query" placeholder="Hledejte něco..." required>
-        <div style="display: flex; gap: 10px;">
-            <button type="submit">Vyhledat</button>
-            <button type="reset" id="reset-button" style="background: #dc3545;">Reset</button>
+    <div class="container">
+        <h1>Vyhledávání na Google</h1>
+        
+        <!-- Google Custom Search Widget -->
+        <script async src="https://cse.google.com/cse.js?cx=b18f2e5a357024d30"></script>
+        <div class="gcse-search"></div>
+
+        <!-- Výsledky vyhledávání -->
+        <div class="results">
+            <div class="result-item">
+                <h3><a href="https://example.com">Příklad výsledku 1</a></h3>
+                <p>Popis výsledku 1</p>
+            </div>
+            <div class="result-item">
+                <h3><a href="https://example.com">Příklad výsledku 2</a></h3>
+                <p>Popis výsledku 2</p>
+            </div>
+            <!-- Dynamicky generované výsledky se objeví zde -->
         </div>
-    </form>
+    </div>
 
-    <!-- Zobrazení chybové zprávy -->
-    <div id="error-message"></div>
-
-    <div id="loader" style="display:none;">Načítám...</div>
-    <div id="results"></div>
-    <button id="download-button" style="display:none;">Stáhnout výsledky</button>
-
-    <script src="script.js"></script>
+    <!-- Google Custom Search Script (zajistí funkčnost) -->
+    <script>
+        // Tento skript je zajišťuje funkčnost pro zobrazení výsledků
+        (function() {
+            var cx = 'b18f2e5a357024d30'; // Vaše CSE ID
+            var gcse = document.createElement('script');
+            gcse.type = 'text/javascript';
+            gcse.async = true;
+            gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(gcse, s);
+        })();
+    </script>
 </body>
 </html>
