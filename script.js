@@ -1,40 +1,43 @@
 document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
-    let query = document.getElementById('query').value;
+    let query = document.getElementById('query').value.trim();
 
-    // Simulované výsledky
-    let results = [
-        {
-            title: "První výsledek pro '" + query + "'",
-            link: "https://www.example.com",
-            snippet: "Toto je první výsledek hledání pro zadané klíčové slovo."
-        },
-        {
-            title: "Druhý výsledek pro '" + query + "'",
-            link: "https://www.example2.com",
-            snippet: "Toto je druhý výsledek hledání pro zadané klíčové slovo."
-        }
-    ];
+    if (!query) {
+        alert("Prosím, zadejte klíčové slovo pro vyhledávání.");
+        return;
+    }
 
-    displayResults(results);
+    let loader = document.getElementById('loader');
+    loader.style.display = 'block';
 
-    // Zobrazíme tlačítko pro stažení
-    document.getElementById('download-button').style.display = 'block';
+    setTimeout(() => {
+        let results = [
+            {
+                title: "První výsledek pro '" + query + "'",
+                link: "https://www.example.com",
+                snippet: "Toto je první výsledek hledání pro zadané klíčové slovo."
+            },
+            {
+                title: "Druhý výsledek pro '" + query + "'",
+                link: "https://www.example2.com",
+                snippet: "Toto je druhý výsledek hledání pro zadané klíčové slovo."
+            }
+        ];
 
-    // Přidání funkce pro stažení výsledků
-    document.getElementById('download-button').onclick = function() {
-        downloadResults(results);
-    };
+        displayResults(results);
+        loader.style.display = 'none';
+        document.getElementById('download-button').style.display = 'block';
+    }, 1500);
 });
 
 function displayResults(results) {
     let resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = ''; // Vymazání předchozích výsledků
+    resultsContainer.innerHTML = '';
 
     results.forEach(result => {
-        let resultItem = document.createElement('div');
-        resultItem.classList.add('result-item');
-        
+        let resultCard = document.createElement('div');
+        resultCard.classList.add('result-card');
+
         let resultTitle = document.createElement('h3');
         resultTitle.textContent = result.title;
         resultTitle.onclick = () => window.open(result.link, '_blank');
@@ -43,17 +46,24 @@ function displayResults(results) {
         let resultSnippet = document.createElement('p');
         resultSnippet.textContent = result.snippet;
 
-        resultItem.appendChild(resultTitle);
-        resultItem.appendChild(resultSnippet);
-        resultsContainer.appendChild(resultItem);
+        let resultLink = document.createElement('a');
+        resultLink.textContent = "Otevřít";
+        resultLink.href = result.link;
+        resultLink.target = "_blank";
+        resultLink.classList.add('result-link');
+
+        resultCard.appendChild(resultTitle);
+        resultCard.appendChild(resultSnippet);
+        resultCard.appendChild(resultLink);
+        resultsContainer.appendChild(resultCard);
     });
 }
 
-function downloadResults(results) {
-    let resultsJSON = JSON.stringify(results, null, 2);
+document.getElementById('download-button').addEventListener('click', function() {
+    let resultsJSON = document.getElementById('results').textContent;
     let blob = new Blob([resultsJSON], { type: 'application/json' });
     let link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = 'vyhledavani.json';
     link.click();
-}
+});
