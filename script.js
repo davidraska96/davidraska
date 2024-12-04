@@ -11,24 +11,30 @@ document.getElementById('search-form').addEventListener('submit', function(event
     loader.style.display = 'block';
     let resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '';  // Vyčistit předchozí výsledky
+    let errorContainer = document.getElementById('error-message');
+    errorContainer.style.display = 'none';  // Skrytí chybové zprávy, pokud existuje
 
     // Použijeme Zenserp API pro získání výsledků
     const apiKey = '337910b0-b27c-11ef-8ae0-fb69bb703eea';
     fetch(`https://api.zenserp.com/v2/search?q=${encodeURIComponent(query)}&apikey=${apiKey}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Chyba při získávání dat');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data && data.results) {
                 displayResults(data.results);
                 document.getElementById('download-button').style.display = 'block';  // Ukázat tlačítko pro stažení
             } else {
-                resultsContainer.innerHTML = "Nebyly nalezeny žádné výsledky.";
+                displayError("Nebyly nalezeny žádné výsledky.");
             }
             loader.style.display = 'none';
         })
         .catch(error => {
             loader.style.display = 'none';
-            alert('Došlo k chybě při vyhledávání výsledku.');
-            console.error(error);
+            displayError('Došlo k chybě při vyhledávání: ' + error.message);
         });
 });
 
@@ -59,6 +65,13 @@ function displayResults(results) {
         resultCard.appendChild(resultLink);
         resultsContainer.appendChild(resultCard);
     });
+}
+
+// Funkce pro zobrazení chybové zprávy
+function displayError(message) {
+    let errorContainer = document.getElementById('error-message');
+    errorContainer.style.display = 'block';
+    errorContainer.textContent = message;
 }
 
 // Funkce pro stažení výsledků jako JSON soubor

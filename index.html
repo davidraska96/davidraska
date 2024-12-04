@@ -3,42 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vyhledání na Google</title>
+    <title>Vyhledávání na Google</title>
     <style>
+        /* Stylování stránky */
         body {
             font-family: Arial, sans-serif;
-            background: #f9f9f9;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo {
-            margin-top: 20px;
+            background-color: #f8f9fa;
+            text-align: center;
         }
 
         h1 {
+            margin-top: 20px;
             color: #333;
-            font-size: 2rem;
-            margin: 20px 0;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            background: #fff;
+        #search-form {
+            margin-top: 30px;
             padding: 20px;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
         }
 
         label {
-            font-size: 1rem;
+            font-size: 1.1rem;
+            display: block;
             margin-bottom: 8px;
         }
 
@@ -150,9 +144,16 @@
             }
         }
 
+        /* Chybová zpráva */
+        #error-message {
+            color: red;
+            margin-top: 20px;
+            display: none;
+        }
+
         /* Responzivní styl */
         @media (max-width: 600px) {
-            form {
+            #search-form {
                 width: 90%;
                 padding: 15px;
             }
@@ -183,6 +184,10 @@
             <button type="reset" id="reset-button" style="background: #dc3545;">Reset</button>
         </div>
     </form>
+
+    <!-- Zobrazení chybové zprávy -->
+    <div id="error-message"></div>
+
     <div id="loader" style="display:none;">Načítám...</div>
     <div id="results"></div>
     <button id="download-button" style="display:none;">Stáhnout výsledky</button>
