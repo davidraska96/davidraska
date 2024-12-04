@@ -1,4 +1,4 @@
-document.getElementById('search-form').addEventListener('submit', async function (event) {
+document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
     let query = document.getElementById('query').value.trim();
 
@@ -9,50 +9,32 @@ document.getElementById('search-form').addEventListener('submit', async function
 
     let loader = document.getElementById('loader');
     loader.style.display = 'block';
+    let resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';  // Vyčistit předchozí výsledky
 
-    try {
-        const apiKey = 'fa2a485992054148005ebd2822733cead14d52247aa2cc205d491589bb048848';
-        const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&hl=cs&gl=cz&api_key=${apiKey}`;
-
-        console.log("Odesílám požadavek na:", url);
-
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP chyba: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("API odpověď:", data);
-
-        if (!data.organic_results || data.organic_results.length === 0) {
-            alert("Nebyly nalezeny žádné výsledky.");
-            return;
-        }
-
-        const results = data.organic_results.map(item => ({
-            title: item.title,
-            link: item.link,
-            snippet: item.snippet,
-        }));
-
-        displayResults(results);
-        document.getElementById('download-button').style.display = 'block';
-    } catch (error) {
-        console.error('Chyba:', error);
-        document.getElementById('results').innerHTML = `
-            <div style="color: red; font-weight: bold; margin-top: 20px;">
-                Došlo k chybě: ${error.message}
-            </div>
-        `;
-        alert('Došlo k chybě. Zkuste to znovu.');
-    } finally {
-        loader.style.display = 'none';
-    }
+    // Použijeme Zenserp API pro získání výsledků
+    const apiKey = '337910b0-b27c-11ef-8ae0-fb69bb703eea';
+    fetch(`https://api.zenserp.com/v2/search?q=${encodeURIComponent(query)}&apikey=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.results) {
+                displayResults(data.results);
+                document.getElementById('download-button').style.display = 'block';  // Ukázat tlačítko pro stažení
+            } else {
+                resultsContainer.innerHTML = "Nebyly nalezeny žádné výsledky.";
+            }
+            loader.style.display = 'none';
+        })
+        .catch(error => {
+            loader.style.display = 'none';
+            alert('Došlo k chybě při vyhledávání výsledku.');
+            console.error(error);
+        });
 });
 
 function displayResults(results) {
     let resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '';
+    resultsContainer.innerHTML = '';  // Vyčistit předchozí výsledky
 
     results.forEach(result => {
         let resultCard = document.createElement('div');
@@ -79,10 +61,18 @@ function displayResults(results) {
     });
 }
 
-document.getElementById('download-button').addEventListener('click', function () {
-    let resultsContainer = document.getElementById('results');
-    let resultsText = resultsContainer.textContent.trim();
-    let blob = new Blob([resultsText], { type: 'application/json' });
+// Funkce pro stažení výsledků jako JSON soubor
+document.getElementById('download-button').addEventListener('click', function() {
+    let results = [];
+    document.querySelectorAll('.result-card').forEach(card => {
+        let title = card.querySelector('h3').textContent;
+        let link = card.querySelector('.result-link').href;
+        let snippet = card.querySelector('p').textContent;
+        results.push({ title, link, snippet });
+    });
+
+    let resultsJSON = JSON.stringify(results, null, 2);
+    let blob = new Blob([resultsJSON], { type: 'application/json' });
     let link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = 'vyhledavani.json';
