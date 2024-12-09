@@ -8,25 +8,42 @@
 <body>
     <h1>Google Scraper</h1>
     <form id="searchForm">
-        <label for="query">Klíčové spojení:</label>
+        <label for="query">Zadejte klíčové slovo:</label>
         <input type="text" id="query" name="query" required>
         <button type="submit">Vyhledat</button>
     </form>
+
+    <h2>Výsledky:</h2>
     <div id="results"></div>
+
+    <button id="downloadBtn" style="display:none;">Stáhnout výsledky</button>
+
     <script>
-        document.getElementById('searchForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Posloucháme formulář pro odeslání
+        document.getElementById('searchForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
             const query = document.getElementById('query').value;
-            const response = await fetch('/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ query })
-            });
+
+            // Pošleme dotaz na server
+            const response = await fetch(`/scrape?query=${encodeURIComponent(query)}`);
             const results = await response.json();
-            const resultDiv = document.getElementById('results');
-            resultDiv.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
+
+            // Zobrazíme výsledky na stránce
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = results.map(result => {
+                return `<div><a href="${result.url}" target="_blank">${result.title}</a></div>`;
+            }).join('');
+
+            // Umožníme stáhnout výsledky
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'inline-block';
+            downloadBtn.onclick = () => {
+                const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'google_results.json';
+                link.click();
+            };
         });
     </script>
 </body>
