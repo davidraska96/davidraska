@@ -1,16 +1,16 @@
 {
     "name": "google-scraper",
     "version": "1.0.0",
+    "description": "Scraping Google results using Puppeteer",
+    "main": "api/scrape.js",
     "scripts": {
       "dev": "vercel dev",
-      "build": "vercel build",
-      "start": "vercel start"
+      "start": "node api/scrape.js"
     },
     "dependencies": {
-      "express": "^4.17.1",
-      "puppeteer-core": "^19.0.0",
-      "chrome-aws-lambda": "^10.0.0",
-      "cors": "^2.8.5"
+      "puppeteer": "^21.0.0"
     }
   }
+  
+  
   
